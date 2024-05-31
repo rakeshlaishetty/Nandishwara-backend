@@ -1,5 +1,6 @@
 const errorResponse = (res, statusCode=500, err) => {
-    return res.status((statusCode || 500)).json({ success: false, message: (err?.message || "Something Went Wrong"), stack: process.env.NODE_ENV === 'production' ? null : err.stack });
+    message = (typeof err == 'string') ? err : err?.message;
+    return res.status((statusCode || 500)).json({ success: false, message: (message || "Something Went Wrong"), stack: process.env.NODE_ENV === 'production' ? null : err.stack });
 };
 
 const successResponse = (res, statusCode, data, message = "success") => {

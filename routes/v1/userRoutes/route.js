@@ -1,8 +1,15 @@
-const router =  require('express').Router()
+const express = require('express');
+const router = express.Router();
+const { register,validateUserInput, login,logout } = require("../../../services/v1/userServices/controller")
 
-router.post('/register',(req,res)=> {
-    throw new Error("Some text")
-    // res.status(201).statusMessage("yes").json({message:"hello"})
-})
 
-module.exports = router
+
+
+// Validate user input
+
+// Register a new user
+router.post('/register', validateUserInput,register);
+router.post('/login', login);
+router.get('/logout',logout);
+
+module.exports = router;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const requiredData = require("./requiredData")
 
 const connectDB = async () => {
     try {
@@ -7,6 +8,7 @@ const connectDB = async () => {
             useUnifiedTopology: true
         });
         console.log('MongoDB connected');
+        await requiredData()
     } catch (err) {
         console.error('MongoDB connection error:', err);
         process.exit(1);
