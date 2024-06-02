@@ -1,17 +1,33 @@
 const Product = require('../../../models/ProductSchema');
 const ProductVariation = require('../../../models/ProductVariationSchema');
 const { successResponse } = require('../../../utils/response');
+const uploadToFirebase = require("../../../firebase/uploadToFirebase")
+const deleteFileWithRetry = require("../../../utils/deletefiles")
 const mongoose = require("mongoose")
 
 const createProduct = async (req, res, next) => {
-    const { productName, description, salePrice, ownerPrice, quantity, status, productCategory, variations, productImages, brand } = req.body;
+    const { productName, description, salePrice, ownerPrice, quantity, status, productCategory, variations, brand } = JSON.parse(JSON.stringify(req.body));
 
-    console.log("REAHC")
+
+    const parsedVariations = JSON.parse(variations);
     try {
+        const files = req.files;
+        if (!files || files?.length == 0) {
+            throw new Error("No files uploaded")
+        }
+
+        const productImages = []
+        for (let file of files) {
+            const publicurl = await uploadToFirebase(file);
+            console.log(publicurl, "publicurl")
+            productImages.push(publicurl)
+            await deleteFileWithRetry(file.path)
+        }
+
         // Create product variations
         const variationIds = [];
-        if (variations && variations.length > 0) {
-            for (const variation of variations) {
+        if (parsedVariations && parsedVariations.length > 0) {
+            for (const variation of parsedVariations) {
                 const newVariation = new ProductVariation(variation);
                 const savedVariation = await newVariation.save();
                 variationIds.push(savedVariation._id);
@@ -137,7 +153,7 @@ const updateProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
     try {
-        const {productId} = req.body;
+        const { productId } = req.body;
 
         // Start a transaction
         const session = await mongoose.startSession();
