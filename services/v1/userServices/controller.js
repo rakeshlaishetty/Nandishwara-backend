@@ -4,6 +4,7 @@ const { successResponse } = require('../../../utils/response');
 const generateHashedPassword = require("../../../utils/generateHashedPassword")
 const comparePasswords = require("../../../utils/comparePasswords")
 const generateToken = require("../../../utils/generateToken")
+const { createWishlist } = require("../../../services/v1/wishlistServices/controller")
 
 
 // Middleware to validate user input
@@ -51,7 +52,7 @@ const register = async (req, res, next) => {
         }
 
         const hashedPassword = await generateHashedPassword(password);
-
+        const Wishlist = await createWishlist()
         const newUser = new User({
             firstName,
             lastName,
@@ -59,7 +60,8 @@ const register = async (req, res, next) => {
             whatsappNumber,
             photoOfBusiness,
             role,
-            password: hashedPassword
+            password: hashedPassword,
+            Wishlist: Wishlist._id
         });
 
         // Save user to database
@@ -106,9 +108,9 @@ const login = async (req, res, next) => {
 // Function to check if the provided input is a valid email
 
 const logout = async (req, res) => {
-    console.log( req.session," req.session")
+    console.log(req.session, " req.session")
     Object.keys(req.cookies).forEach(cookieName => {
-        console.log(cookieName,"user") 
+        console.log(cookieName, "user")
     })
     try {
         req.session.destroy((err) => {

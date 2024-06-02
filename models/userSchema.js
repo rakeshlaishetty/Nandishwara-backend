@@ -4,7 +4,8 @@ const Role = require('../models/roleSchema')
 const Order = require('../models/orderSchema')
 const Address = require('../models/addressSchema')
 const CartItem = require('../models/cartItemSchema')
-const sampleRequests = require('../models/requestSampleSchema')
+const sampleRequests = require('../models/requestSampleSchema');
+const Wishlist = require('./wishlistSchmea');
 
 
 
@@ -16,7 +17,7 @@ const userSchema = new Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    whatsappNumber: { type: String, required: true,unique:true},
+    whatsappNumber: { type: String, required: true, unique: true },
     photoOfBusiness: { type: String, required: function () { return this.role === ROLES.SHOP_OWNER; } },
     status: { type: Boolean, default: function () { return this.role !== ROLES.SHOP_OWNER; } },
     orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
@@ -25,7 +26,8 @@ const userSchema = new Schema({
     sampleRequests: [{ type: Schema.Types.ObjectId, ref: 'SampleRequest' }],
     password: { type: String, required: true },
     role: { type: Schema.Types.ObjectId, ref: "Role", required: true, },
-    isBlocked: { type: Boolean, default: false }
+    isBlocked: { type: Boolean, default: false },
+    Wishlist: { type: Schema.Types.ObjectId, ref: "Wishlist", },
 });
 
 // Pre-save hook to enforce mandatory fields based on role
