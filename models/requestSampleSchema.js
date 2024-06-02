@@ -34,3 +34,5 @@ const SampleRequestSchema = new Schema({
 });
 
 const sampleRequests = mongoose.model("sampleRequests",SampleRequestSchema)
+
+module.exports = sampleRequests
