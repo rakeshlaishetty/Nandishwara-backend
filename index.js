@@ -6,6 +6,7 @@ const session = require('express-session');
 const { uploadMiddleware } = require('./middleware/uploadMiddleware');
 const uploadToFirebase = require('./firebase/uploadToFirebase');
 const fs = require('fs');
+const cors = require("cors")
 const util = require('util');
 const mkdir = util.promisify(fs.mkdir);
 
@@ -23,20 +24,27 @@ connectDB();
 // Setup App
 const app = express();
 
-app.use(cookieParser());
+app.use(cors({
+    origin: 'http://localhost:3000', // or your frontend domain
+    credentials: true,
+}));
 
+
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
-        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+        httpOnly: true,
+        secure: true, // Set to true if using HTTPS
+        sameSite: 'Lax',
     }
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 app.use(morgan('combined'));
 app.use(helmet());
 
